@@ -24,6 +24,8 @@ class ListNode(object):
         self.val = val
         self.next = next
 
+from heapq import heappush, heappop
+
 class Solution(object):
     def mergeKLists(self, lists):
         """
@@ -33,42 +35,22 @@ class Solution(object):
         if len(lists) == 0:
             return None
 
-        head = None
-        fIndex = -1
-        cleanUp = 0
+        heap = []
+        
         for i in range(len(lists)):
-            if lists[i] == None:
-                cleanUp += 1
-            elif fIndex == -1 or lists[i].val < lists[fIndex].val:
-                fIndex = i
+            current = lists[i]
+            while current != None:
+                heappush(heap, current.val)
+                current = current.next
 
-        if fIndex == -1: 
+        if len(heap) == 0:
             return None
         
-        head = ListNode(lists[fIndex].val)
-        lists[fIndex] = lists[fIndex].next
-        if lists[fIndex] == None:
-            cleanUp += 1
-
-        while cleanUp > 0:
-            lists.remove(None)
-            cleanUp -= 1
-
+        head = ListNode(heappop(heap))
         current = head
-        while current != None:
-            kIndex = -1
-            for i in range(len(lists)):
-                if kIndex == -1 or lists[i].val < lists[kIndex].val:
-                    kIndex = i
-            
-            if kIndex == -1:
-                break
-
-            current.next = ListNode(lists[kIndex].val)
+        while len(heap) > 0:
+            current.next = ListNode(heappop(heap))
             current = current.next
-            lists[kIndex] = lists[kIndex].next
-            if lists[kIndex] == None:
-                lists.pop(kIndex)
 
         return head
         
